@@ -1,0 +1,360 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>可编辑个人简历</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background: #f8f9fa;
+            padding: 30px 0;
+        }
+
+        /* 简历整体大盒子 - 柔和渐变外层边框 */
+        .resume-container {
+            width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border: 3px solid transparent;
+            border-radius: 10px;
+            background-image: linear-gradient(white, white), linear-gradient(135deg, #4facfe 0%, #87ceeb 50%, #00f2fe 100%);
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.15);
+        }
+
+        /* 简历标题 */
+        .resume-title {
+            text-align: center;
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid transparent;
+            border-image: linear-gradient(90deg, transparent 10%, #4facfe 50%, transparent 90%) 1;
+            width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 每个模块的柔和渐变边框 */
+        .resume-section {
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background-image: linear-gradient(white, white), linear-gradient(135deg, #96fbc4 0%, #e6f8b2 50%, #f9f586 100%);
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+            margin-bottom: 25px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(150, 251, 196, 0.08);
+        }
+
+        /* 模块标题 */
+        .section-title {
+            color: #2c3e50;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid transparent;
+            border-image: linear-gradient(90deg, transparent 10%, #4facfe 50%, #96fbc4 80%, transparent 90%) 1;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* 基本信息区域排版 */
+        .basic-info-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+        }
+
+        /* 头像上传+预览 */
+        .avatar-wrapper {
+            position: relative;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 160px;
+            border: 3px solid transparent;
+            border-radius: 6px;
+            background-image: linear-gradient(white, white), linear-gradient(135deg, #4facfe 0%, #87ceeb 50%, #00f2fe 100%);
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+            object-fit: cover;
+            display: block;
+            cursor: pointer;
+        }
+
+        .avatar-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .avatar-tip {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        /* 基本信息输入框网格 */
+        .info-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px 15px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+        }
+
+            .info-item label {
+                font-weight: bold;
+                display: inline-block;
+                width: 90px;
+                color: #64b5f6;
+                font-size: 15px;
+            }
+
+        .info-input {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 15px;
+            color: #333;
+            outline: none;
+            transition: border 0.3s ease;
+        }
+
+            .info-input:focus {
+                border-color: #4facfe;
+                box-shadow: 0 0 5px rgba(79, 172, 254, 0.2);
+            }
+
+        /* 内容区域文本域 */
+        .content-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 15px;
+            color: #444;
+            line-height: 1.8;
+            resize: vertical;
+            outline: none;
+            transition: border 0.3s ease;
+        }
+
+            .content-textarea:focus {
+                border-color: #4facfe;
+                box-shadow: 0 0 5px rgba(79, 172, 254, 0.2);
+            }
+
+        /* 保存按钮 */
+        .save-btn {
+            display: block;
+            width: 200px;
+            height: 45px;
+            line-height: 45px;
+            text-align: center;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0 auto;
+            box-shadow: 0 4px 10px rgba(79, 172, 254, 0.3);
+            transition: transform 0.2s ease;
+        }
+
+            .save-btn:hover {
+                transform: translateY(-2px);
+            }
+    </style>
+</head>
+<body>
+    <div class="resume-container">
+        <!-- 简历标题 -->
+        <h1 class="resume-title">个人简历</h1>
+
+        <!-- 第一部分：基本信息（可编辑+头像上传） -->
+        <div class="resume-section">
+            <h2 class="section-title">基本信息</h2>
+            <div class="basic-info-wrapper">
+                <!-- 头像上传区域 -->
+                <div class="avatar-wrapper">
+                    <img id="avatar-preview" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjE2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuNSIgc3Ryb2tlPSIjY2NjIiBzdHJva2Utd2lkdGg9IjEiLz48Y2lyY2xlIGN4PSI2MCIgY3k9IjgwIiByPSIzMCIgZmlsbD0iIzY0YjVmNiIvPjxwYXRoIGQ9Ik02MCAxMTVjLTEwLjUgLTMuNSAtMjAgMTAtMjAgMTBzLTIwIC0xMy41IC0yMCAtMTAgMjAgMTAgMjAgLTEwIDIwIDEweiIgZmlsbD0iIzY0YjVmNiIvPjwvc3ZnPg==" alt="点击上传照片" class="avatar">
+                    <input type="file" accept="image/*" class="avatar-input" id="avatar-input">
+                    <div class="avatar-tip">点击上传头像</div>
+                </div>
+
+                <!-- 基本信息输入框 -->
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>姓名：</label>
+                        <input type="text" class="info-input" placeholder="请输入姓名">
+                    </div>
+                    <div class="info-item">
+                        <label>电话：</label>
+                        <input type="tel" class="info-input" placeholder="请输入手机号码">
+                    </div>
+                    <div class="info-item">
+                        <label>性别：</label>
+                        <input type="text" class="info-input" placeholder="如：男/女">
+                    </div>
+                    <div class="info-item">
+                        <label>邮箱：</label>
+                        <input type="email" class="info-input" placeholder="请输入邮箱地址">
+                    </div>
+                    <div class="info-item">
+                        <label>民族：</label>
+                        <input type="text" class="info-input" placeholder="如：汉族">
+                    </div>
+                    <div class="info-item">
+                        <label>专业：</label>
+                        <input type="text" class="info-input" placeholder="请输入所学专业">
+                    </div>
+                    <div class="info-item">
+                        <label>出生年月：</label>
+                        <input type="text" class="info-input" placeholder="如：2000年01月">
+                    </div>
+                    <div class="info-item">
+                        <label>毕业时间：</label>
+                        <input type="text" class="info-input" placeholder="如：2024年06月">
+                    </div>
+                    <div class="info-item">
+                        <label>政治面貌：</label>
+                        <input type="text" class="info-input" placeholder="如：共青团员/党员">
+                    </div>
+                    <div class="info-item">
+                        <label>毕业院校：</label>
+                        <input type="text" class="info-input" placeholder="请输入毕业院校">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第二部分：教育背景 -->
+        <div class="resume-section">
+            <h2 class="section-title">教育背景</h2>
+            <textarea class="content-textarea" placeholder="请填写教育背景，示例：
+2020年09月 - 2024年06月  XX大学  XX专业  本科
+主修课程：XXX、XXX、XXX
+获奖情况：XXX奖学金、XXX竞赛奖项"></textarea>
+        </div>
+
+        <!-- 第三部分：实践经历 -->
+        <div class="resume-section">
+            <h2 class="section-title">实践经历</h2>
+            <textarea class="content-textarea" placeholder="请填写实践/工作经历，示例：
+2023年07月 - 2023年09月  XX公司  XX岗位  实习
+工作内容：
+1. 负责XXX项目的XXX工作；
+2. 协助完成XXX任务，提升了XXX能力；
+3. 参与XXX活动，取得XXX成果。"></textarea>
+        </div>
+
+        <!-- 第四部分：校园经历 -->
+        <div class="resume-section">
+            <h2 class="section-title">校园经历</h2>
+            <textarea class="content-textarea" placeholder="请填写校园经历，示例：
+2021年09月 - 2022年09月  校学生会XX部  部长
+主要工作：
+1. 组织策划XXX校园活动，参与人数XXX人；
+2. 协调XXX部门完成XXX工作，提升团队协作能力；
+3. 负责XXX事项的统筹管理，锻炼沟通能力。"></textarea>
+        </div>
+
+        <!-- 第五部分：技能与自我评价 -->
+        <div class="resume-section">
+            <h2 class="section-title">技能与自我评价</h2>
+            <textarea class="content-textarea" placeholder="请填写技能与自我评价，示例：
+专业技能：
+1. 熟练掌握XXX软件/编程语言；
+2. 具备XXX专业能力，持有XXX证书；
+3. 英语XXX级，具备XXX语言能力。
+
+自我评价：
+性格开朗，责任心强，具备良好的沟通能力和团队协作精神；
+学习能力强，能快速适应新环境和新工作；
+对XXX领域有浓厚兴趣，愿意持续学习和提升。"></textarea>
+        </div>
+
+        <!-- 保存按钮 -->
+        <button class="save-btn">保存简历内容</button>
+    </div>
+
+    <script>
+        // 头像预览功能
+        const avatarInput = document.getElementById('avatar-input');
+        const avatarPreview = document.getElementById('avatar-preview');
+
+        avatarInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+        avatarPreview.src = event.target.result;
+        }
+        reader.readAsDataURL(file);
+        }
+        });
+
+        // 保存按钮提示（可扩展为本地存储）
+        const saveBtn = document.querySelector('.save-btn');
+        saveBtn.addEventListener('click', function() {
+        alert('简历内容已保存！（实际项目中可对接后端或本地存储）');
+        });
+
+        // 可选：本地存储功能（刷新后内容不丢失）
+        window.addEventListener('load', function() {
+        // 读取本地存储的输入框内容
+        const inputs = document.querySelectorAll('.info-input, .content-textarea');
+        inputs.forEach(input => {
+        const key = input.placeholder || input.name || input.className;
+        const value = localStorage.getItem('resume_' + key);
+        if (value) input.value = value;
+        });
+
+        // 读取头像
+        const avatarSrc = localStorage.getItem('resume_avatar');
+        if (avatarSrc) avatarPreview.src = avatarSrc;
+        });
+
+        // 实时保存输入内容到本地存储
+        document.addEventListener('input', function(e) {
+        const target = e.target;
+        if (target.classList.contains('info-input') || target.classList.contains('content-textarea')) {
+        const key = target.placeholder || target.name || target.className;
+        localStorage.setItem('resume_' + key, target.value);
+        }
+        });
+
+        // 保存头像到本地存储
+        avatarPreview.addEventListener('load', function() {
+        if (avatarPreview.src && !avatarPreview.src.includes('svg+xml')) {
+        localStorage.setItem('resume_avatar', avatarPreview.src);
+        }
+        });
+    </script>
+</body>
+</html>
